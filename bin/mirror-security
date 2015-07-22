@@ -1,0 +1,12 @@
+#!/bin/sh
+stats=2
+
+while [ "$stats" -ne "0" ]; do
+	/usr/bin/debmirror --allow-dist-rename --getcontents -p -v --nosource --diff=use -h security.debian.org --i18n -e rsync -r :debian-security -d stable/updates,testing/updates -a i386,amd64 --ignore-release-gpg /srv/mirror/debian-security/repo/debian
+	stats=$?
+if [ "$stats" -eq "0" ]; then
+	/usr/bin/mail -e -s "Mirror debian security actualizado `date +%m/%d/%y`" c@heilroot.com < /srv/www/debian-security/ok-msg.txt
+else
+	/usr/bin/mail -e -s "Mirror debian security error al actualizar `date +%m/%d/%y`" c@heilroot.com < /srv/www/debian-security/err-msg.txt
+fi
+done

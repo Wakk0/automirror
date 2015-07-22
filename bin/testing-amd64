@@ -1,0 +1,27 @@
+#!/bin/sh
+# Testing amd64
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/amd64/jigdo-cd/MD5SUMS.large -O /srv/www/wwwcd/MD5SUMS.testing-amd64
+cdamd64file=`/bin/cat /srv/www/wwwcd/MD5SUMS.testing-amd64|/bin/grep -v kde|/bin/grep -v lx|/bin/grep CD-1.iso|/bin/grep -v xf|/usr/bin/awk '{print $2}'`
+cdamd64jigdofile="${cdamd64file%.iso}"
+md5new=`/bin/cat /srv/www/wwwcd/MD5SUMS.testing-amd64|/bin/grep amd64-CD-1.iso| /usr/bin/awk '{print $1}'`
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$cdamd64file" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$cdamd64file|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/amd64/jigdo-cd/$cdamd64jigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/amd64/jigdo-cd/$cdamd64jigdofile.template
+	/usr/bin/jigdo-lite --noask /srv/www/wwwcd/$cdamd64jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdamd64jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdamd64jigdofile.template
+        /bin/rm /srv/www/wwwcd/$cdamd64jigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$cdamd64jigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$cdamd64jigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$cdamd64jigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.testing-amd64
+	/bin/mv /srv/www/wwwcd/$cdamd64file /srv/www/wwwcd/htdocs/iso/
+fi

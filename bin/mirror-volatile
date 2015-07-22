@@ -1,0 +1,30 @@
+#!/bin/sh
+stats=3
+while [ "$stats" -ne "0" ]; do
+	/usr/bin/debmirror --allow-dist-rename --getcontents -p -v --nosource -h mirrors.kernel.org -e rsync -r :debian -d stable-updates -a i386,amd64 -s main,contrib --ignore-release-gpg /srv/www/debian-volatile/repo/debian
+	stats=$?
+if [ "$stats" -eq "0" ]; then
+	/usr/bin/mail -e -s "Mirror debian volatile actualizado `date +%m/%d/%y`" c@heilroot.com < /srv/www/debian-volatile/ok-msg.txt
+else
+	/usr/bin/mail -e -s "Mirror debian volatile error al actualizar `date +%m/%d/%y`" c@heilroot.com < /srv/www/debian-volatile/err-msg.txt
+fi
+done
+
+#wget ftp://ftp.us.debian.org/debian/dists/stable/main/Contents-i386.gz -O /srv/www/debian-volatile/repo/debian/dists/stable/main/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/main/Contents-amd64.gz -O /srv/www/debian-volatile/repo/debian/dists/stable/main/Contents-amd64.gz
+
+#wget ftp://ftp.us.debian.org/debian/dists/stable/contrib/Contents-i386.gz -O /srv/www/debian-volatile/repo/debian/dists/stable/contrib/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/contrib/Contents-amd64.gz -O /srv/www/debian-volatile/repo/debian/dists/stable/contrib/Contents-amd64.gz
+
+#wget ftp://ftp.us.debian.org/debian/dists/stable/non-free/Contents-i386.gz -O /srv/www/debian-volatile/repo/debian/dists/stable/non-free/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/non-free/Contents-amd64.gz -O /srv/www/debian-volatile/repo/debian/dists/stable/non-free/Contents-amd64.gz
+
+#wget ftp://ftp.us.debian.org/debian/dists/testing/main/Contents-i386.gz -O /srv/www/debian-volatile/repo/debian/dists/testing/main/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/main/Contents-amd64.gz -O /srv/www/debian-volatile/repo/debian/dists/testing/main/Contents-amd64.gz
+
+#wget ftp://ftp.us.debian.org/debian/dists/testing/contrib/Contents-i386.gz -O /srv/www/debian-volatile/repo/debian/dists/testing/contrib/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/contrib/Contents-amd64.gz -O /srv/www/debian-volatile/repo/debian/dists/testing/contrib/Contents-amd64.gz
+
+#wget ftp://ftp.us.debian.org/debian/dists/testing/non-free/Contents-i386.gz -O /srv/www/debian-volatile/repo/debian/dists/testing/non-free/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/non-free/Contents-amd64.gz -O /srv/www/debian-volatile/repo/debian/dists/testing/non-free/Contents-amd64.gz
+

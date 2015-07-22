@@ -1,0 +1,27 @@
+#!/bin/sh
+# Stable i386 NetInstall
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/debian-cd/current/i386/jigdo-cd/MD5SUMS -O /srv/www/wwwcd/MD5SUMS.stable-i386-netinst
+cdi386file=`/bin/cat /srv/www/wwwcd/MD5SUMS.stable-i386-netinst|/bin/grep netinst |/usr/bin/awk '{print $2}'`
+md5new=`/bin/cat /srv/www/wwwcd/MD5SUMS.stable-i386-netinst|/bin/grep netinst|/usr/bin/awk '{print $1}'`
+cdi386jigdofile="${cdi386file%.iso}"
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$cdi386file" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$cdi386file|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/i386/jigdo-cd/$cdi386jigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/i386/jigdo-cd/$cdi386jigdofile.template
+	/usr/bin/jigdo-lite --noask $cdi386jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdi386jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdi386jigdofile.template
+        /bin/rm /srv/www/wwwcd/$cdi386jigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$cdi386jigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$cdi386jigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$cdi386jigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.stable-i386-netinst
+	/bin/mv /srv/www/wwwcd/$cdi386file /srv/www/wwwcd/htdocs/iso/
+fi

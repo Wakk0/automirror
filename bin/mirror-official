@@ -1,0 +1,26 @@
+#!/bin/sh
+stats=1
+
+while [ "$stats" -ne "0" ]; do
+	/usr/bin/debmirror --allow-dist-rename -p -v --nosource --getcontents -h mirrors.kernel.org -e rsync -r :debian -d stable,testing -a i386,amd64 --i18n --ignore-release-gpg /srv/mirror/debian-official/repo/debian
+	stats=$?
+
+	if [ "$stats" -eq "0" ]; then
+		/usr/bin/mail -e -s "Mirror debian official actualizado `date +%m/%d/%y`" c@heilroot.com < /srv/mirror/debian-official/ok-msg.txt
+	else
+		/usr/bin/mail -e -s "Mirror debian official error al actualizar `date +%m/%d/%y`" c@heilroot.com < /srv/mirror/debian-official/err-msg.txt
+	fi
+done
+
+#wget ftp://ftp.us.debian.org/debian/dists/stable/main/Contents-i386.gz -O /srv/mirror/debian-official/repo/debian/dists/stable/main/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/main/Contents-amd64.gz -O /srv/mirror/debian-official/repo/debian/dists/stable/main/Contents-amd64.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/contrib/Contents-i386.gz -O /srv/mirror/debian-official/repo/debian/dists/stable/contrib/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/contrib/Contents-amd64.gz -O /srv/mirror/debian-official/repo/debian/dists/stable/contrib/Contents-amd64.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/non-free/Contents-i386.gz -O /srv/mirror/debian-official/repo/debian/dists/stable/non-free/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/stable/non-free/Contents-amd64.gz -O /srv/mirror/debian-official/repo/debian/dists/stable/non-free/Contents-amd64.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/main/Contents-i386.gz -O /srv/mirror/debian-official/repo/debian/dists/testing/main/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/main/Contents-amd64.gz -O /srv/mirror/debian-official/repo/debian/dists/testing/main/Contents-amd64.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/contrib/Contents-i386.gz -O /srv/mirror/debian-official/repo/debian/dists/testing/contrib/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/contrib/Contents-amd64.gz -O /srv/mirror/debian-official/repo/debian/dists/testing/contrib/Contents-amd64.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/non-free/Contents-i386.gz -O /srv/mirror/debian-official/repo/debian/dists/testing/non-free/Contents-i386.gz
+#wget ftp://ftp.us.debian.org/debian/dists/testing/non-free/Contents-amd64.gz -O /srv/mirror/debian-official/repo/debian/dists/testing/non-free/Contents-amd64.gz

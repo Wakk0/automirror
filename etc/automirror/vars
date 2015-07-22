@@ -1,0 +1,4 @@
+# All path and variables to use
+
+CUR_PATH=`pwd`
+

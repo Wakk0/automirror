@@ -1,0 +1,27 @@
+#!/bin/sh
+# stable multi-arch
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/debian-cd/current/multi-arch/jigdo-cd/MD5SUMS /srv/www/wwwcd/MD5SUMS.stable-multi_arch
+cdmafile=`/bin/cat /srv/www/wwwcd/MD5SUMS.stable-multi_arch|/bin/grep netinst.iso|/usr/bin/awk '{print $2}'`
+cdmajigdofile="${cdmafile%.iso}"
+md5new=`/bin/cat /srv/www/wwwcd/MD5SUMS.stable-multi_arch|/bin/grep netinst.iso| /usr/bin/awk '{print $1}'`
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$cdmafile" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$cdmafile|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/multi-arch/jigdo-cd/$cdmajigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/multi-arch/jigdo-cd/$cdmajigdofile.template
+	/usr/bin/jigdo-lite --noask /srv/www/wwwcd/$cdmajigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdmajigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdmajigdofile.template
+        /bin/rm /srv/www/wwwcd/$cdmajigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$cdmajigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$cdmajigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$cdmajigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.stable-multi_arch
+	/bin/mv /srv/www/wwwcd/$cdmajigdofile.iso /srv/www/wwwcd/htdocs/iso/
+fi

@@ -1,0 +1,27 @@
+#!/bin/sh
+# Testing multi-arch
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/multi-arch/jigdo-dvd/MD5SUMS -O /srv/www/wwwcd/MD5SUMS.testing-multi-arch-dvd
+dvdmulti-archfile=`/bin/cat /srv/www/wwwcd/MD5SUMS.testing-multi-arch-dvd|/bin/grep -v kde|/bin/grep -v lx|/bin/grep DVD-1.iso|/bin/grep -v xf|/usr/bin/awk '{print $2}'`
+dvdmulti-archjigdofile="${dvdmulti-archfile%.iso}"
+md5new=`/bin/cat /srv/www/wwwcd/MD5SUMS.testing-multi-arch-dvd|/bin/grep multi-arch-DVD-1.iso|/usr/bin/awk '{print $1}'`
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$dvdmulti-archfile" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$dvdmulti-archfile|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/multi-arch/jigdo-dvd/$dvdmulti-archjigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/multi-arch/jigdo-dvd/$dvdmulti-archjigdofile.template
+	/usr/bin/jigdo-lite --noask /srv/www/wwwcd/$dvdmulti-archjigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$dvdmulti-archjigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$dvdmulti-archjigdofile.template
+        /bin/rm /srv/www/wwwcd/$dvdmulti-archjigdofile.iso.list
+        /bin/rm /srv/www/wwwcd/$dvdmulti-archjigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$dvdmulti-archjigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$dvdmulti-archjigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.testing-multi-arch-dvd
+	/bin/mv /srv/www/wwwcd/$dvdmulti-archfile /srv/www/wwwcd/htdocs/iso/
+fi

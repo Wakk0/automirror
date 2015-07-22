@@ -1,0 +1,27 @@
+#!/bin/sh
+# Stable amd64 NetInstall
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/debian-cd/current/amd64/jigdo-cd/MD5SUMS -O /srv/www/wwwcd/MD5SUMS.stable-amd64-netinst
+cdamd64file=`/bin/cat /srv/www/wwwcd/MD5SUMS.stable-amd64-netinst|/bin/grep netinst |/usr/bin/awk '{print $2}'`
+md5new=`/bin/cat /srv/www/wwwcd/MD5SUMS.stable-amd64-netinst|/bin/grep netinst|/usr/bin/awk '{print $1}'`
+cdamd64jigdofile="${cdamd64file%.iso}"
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$cdamd64jigdofile.iso" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$cdamd64jigdofile.iso|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/amd64/jigdo-cd/$cdamd64jigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/amd64/jigdo-cd/$cdamd64jigdofile.template
+	/usr/bin/jigdo-lite --noask $cdamd64jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdamd64jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdamd64jigdofile.template
+        /bin/rm /srv/www/wwwcd/$cdamd64jigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$cdamd64jigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$cdamd64jigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$cdamd64jigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.stable-amd64-netinst
+	/bin/mv /srv/www/wwwcd/$cdamd64file /srv/www/wwwcd/htdocs/iso/
+fi

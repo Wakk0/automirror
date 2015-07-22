@@ -1,0 +1,22 @@
+#!/bin/sh
+stats=3
+
+while [ "$stats" -ne "0" ]; do
+	/usr/bin/debmirror --allow-dist-rename --getcontents -p -v --nosource -h www.deb-multimedia.org -e rsync --i18n -r :deb -d stable,testing,sid -a i386,amd64 --ignore-release-gpg /srv/mirror/debian-multimedia/repo/debian
+	stats=$?
+
+	if [ "$stats" -eq "0" ]; then
+        	/usr/bin/mail -e -s "Mirror debian Multimedia actualizado `date +%m/%d/%y`" c@heilroot.com < /srv/mirror/debian-multimedia/ok-msg.txt
+	else
+        	/usr/bin/mail -e -s "Mirror debian Multimedia error al actualizar `date +%m/%d/%y`" c@heilroot.com < /srv/mirror/debian-multimedia/err-msg.txt
+	fi
+done
+
+#wget http://www.deb-multimedia.org/dists/stable/main/Contents-i386.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/stable/main/Contents-i386.gz
+#wget http://www.deb-multimedia.org/dists/stable/main/Contents-amd64.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/stable/main/Contents-amd64.gz
+#wget http://www.deb-multimedia.org/dists/stable/non-free/Contents-i386.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/stable/non-free/Contents-i386.gz
+#wget http://www.deb-multimedia.org/dists/stable/non-free/Contents-amd64.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/stable/non-free/Contents-amd64.gz
+#wget http://www.deb-multimedia.org/dists/testing/main/Contents-i386.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/testing/non-free/Contents-i386.gz
+#wget http://www.deb-multimedia.org/dists/testing/main/Contents-amd64.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/testing/non-free/Contents-amd64.gz
+#wget http://www.deb-multimedia.org/dists/testing/non-free/Contents-i386.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/testing/non-free/Contents-i386.gz
+#wget http://www.deb-multimedia.org/dists/testing/non-free/Contents-amd64.gz -O /srv/mirror/debian-multimedia/repo/debian/dists/testing/non-free/Contents-amd64.gz

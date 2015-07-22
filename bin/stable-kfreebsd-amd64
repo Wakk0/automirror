@@ -1,0 +1,27 @@
+#!/bin/sh
+# Stable kfreebsd-amd64
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/debian-cd/current/kfreebsd-amd64/jigdo-cd/MD5SUMS -O /srv/www/wwwcd/MD5SUMS.stable-kfreebsd-amd64
+cdkfreebsdamd64file=`/usr/bin/head -1 /srv/www/wwwcd/MD5SUMS.stable-kfreebsd-amd64|awk '{print $2}'`
+md5new=`/usr/bin/head -1 /srv/www/wwwcd/MD5SUMS.stable-kfreebsd-amd64|/usr/bin/awk '{print $1}'`
+cdkfreebsdamd64jigdofile="${cdkfreebsdamd64file%.iso}"
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$cdkfreebsdamd64file" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$cdkfreebsdamd64file|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/kfreebsd-amd64/jigdo-cd/$cdkfreebsdamd64jigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/kfreebsd-amd64/jigdo-cd/$cdkfreebsdamd64jigdofile.template
+	/usr/bin/jigdo-lite --noask /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.template
+        /bin/rm /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$cdkfreebsdamd64jigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.stable-kfreebsd-amd64
+	/bin/mv /srv/www/wwwcd/$cdkfreebsdamd64file /srv/www/wwwcd/htdocs/iso/
+fi

@@ -1,0 +1,11 @@
+#!/bin/sh
+stats=4
+while [ "$stats" -ne "0" ]; do
+	/usr/bin/debmirror -p -v --nosource --getcontents -h download.virtualbox.org -e http -r virtualbox/debian -d jessie -a i386,amd64 --i18n --ignore-release-gpg /srv/mirror/virtualbox/repo/debian
+	stats=$?
+if [ "$stats" -eq "0" ]; then
+	/usr/bin/mail -e -s "Mirror Virtualbox actualizado `date +%m/%d/%y`" c@heilroot.com < /srv/www/virtualbox/ok-msg.txt
+else
+	/usr/bin/mail -e -s "Mirror Virtualbox error al actualizar `date +%m/%d/%y`" c@heilroot.com < /srv/www/virtualbox/err-msg.txt
+fi
+done

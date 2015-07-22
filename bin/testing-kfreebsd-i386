@@ -1,0 +1,27 @@
+#!/bin/sh
+# Testing kfreebsdi386
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/kfreebsd-i386/jigdo-cd/MD5SUMS.large -O /srv/www/wwwcd/MD5SUMS.testing-kfreebsd-i386
+cdkfreebsdi386file=`/bin/cat /srv/www/wwwcd/MD5SUMS.testing-kfreebsd-i386|/bin/grep -v kde|/bin/grep -v lx|/bin/grep CD-1.iso|/bin/grep -v xf|/usr/bin/awk '{print $2}'
+cdkfreebsdi386jigdofile="${cdkfreebsdi386file%.iso}"
+md5new=`/bin/cat /srv/www/wwwcd/MD5SUMS.testing-kfreebsd-i386|/bin/grep kfreebsd-i386-CD-1.iso| /usr/bin/awk '{print $1}'`
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$cdkfreebsdi386file" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$cdkfreebsdi386file|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/kfreebsd-i386/jigdo-cd/$cdkfreebsdi386jigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/cdimage/weekly-builds/kfreebsd-i386/jigdo-cd/$cdkfreebsdi386jigdofile.template
+	/usr/bin/jigdo-lite --noask /srv/www/wwwcd/$cdkfreebsdi386jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdkfreebsdi386jigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$cdkfreebsdi386jigdofile.template
+        /bin/rm /srv/www/wwwcd/$cdkfreebsdi386jigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$cdkfreebsdi386jigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$cdkfreebsdi386jigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$cdkfreebsdi386jigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.testing-kfreebsd-i386
+	/bin/mv /srv/www/wwwcd/$cdkfreebsdi386file /srv/www/wwwcd/htdocs/iso/
+fi

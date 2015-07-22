@@ -1,0 +1,27 @@
+#!/bin/sh
+# Stable multi-arch
+cd /srv/www/wwwcd/
+/usr/bin/wget http://cdimage.debian.org/debian-cd/current/multi-arch/jigdo-dvd/MD5SUMS -O /srv/www/wwwcd/MD5SUMS.stable-multi-arch-dvd
+dvdmafile=`/usr/bin/head -1 /srv/www/wwwcd/MD5SUMS.stable-multi-arch-dvd|/usr/bin/awk '{print $2}'`
+md5new=`/usr/bin/head -1 /srv/www/wwwcd/MD5SUMS.stable-multi-arch-dvd|/usr/bin/awk '{print $1}'`
+dvdmajigdofile="${dvdmafile%.iso}"
+
+if [ -f "/srv/www/wwwcd/htdocs/iso/$dvdmafile" ]; then
+md5old=`/usr/bin/md5sum /srv/www/wwwcd/htdocs/iso/$dvdmafile|/usr/bin/awk '{print $1}'`
+else
+md5old="1"
+fi
+
+if [ "$md5new" != "$md5old" ]; then
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/multi-arch/jigdo-dvd/$dvdmajigdofile.jigdo
+	/usr/bin/wget http://cdimage.debian.org/debian-cd/current/multi-arch/jigdo-dvd/$dvdmajigdofile.template
+	/usr/bin/jigdo-lite --noask /srv/www/wwwcd/$dvdmajigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$dvdmajigdofile.jigdo
+	/bin/rm /srv/www/wwwcd/$dvdmajigdofile.template
+        /bin/rm /srv/www/wwwcd/$dvdmajigdofile.iso.list 
+        /bin/rm /srv/www/wwwcd/$dvdmajigdofile.iso.tmp
+        /bin/rm -rf /srv/www/wwwcd/$dvdmajigdofile.iso.tmpdir
+        /bin/rm /srv/www/wwwcd/$dvdmajigdofile.jigdo.unpacked
+        /bin/rm /srv/www/wwwcd/MD5SUMS.stable-multi-arch-dvd
+	/bin/mv /srv/www/wwwcd/$dvdmafile /srv/www/wwwcd/htdocs/iso/
+fi
