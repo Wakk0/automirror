@@ -1,14 +1,14 @@
 #!/bin/sh
-stats=1
-
+#. $AUTOMIRROR_CONF
+. /var/www/mirrors/automirror/etc/automirror/automirror.conf
+stats=5
 while [ "$stats" -ne "0" ]; do
-	/usr/bin/debmirror --allow-dist-rename -p -v --nosource --getcontents -h mirrors.kernel.org -e rsync -r :debian -d stable,testing -a i386,amd64 --i18n --ignore-release-gpg /srv/mirror/debian-official/repo/debian
+	$DEBMIRROR --allow-dist-rename -p -v --nosource --getcontents -h $OFFICIAL_MIRROR -e $OFFICIAL_PROTO -r $OFFICIAL_DIR -d $OFFICIAL_DIST -a $OFFICIAL_ARCH --i18n --ignore-release-gpg $OFFICIAL_EXTRAS $OFFICIAL_WWW
 	stats=$?
-
 	if [ "$stats" -eq "0" ]; then
-		/usr/bin/mail -e -s "Mirror debian official actualizado `date +%m/%d/%y`" c@heilroot.com < /srv/mirror/debian-official/ok-msg.txt
+		/usr/bin/mail -e -s "$OFFICIAL_SUBJECT_OK `date +%m/%d/%y`" $SEND_MAIL < $OK_MSG
 	else
-		/usr/bin/mail -e -s "Mirror debian official error al actualizar `date +%m/%d/%y`" c@heilroot.com < /srv/mirror/debian-official/err-msg.txt
+		/usr/bin/mail -e -s "$OFFICIAL_SUBJECT_ER `date +%m/%d/%y`" $SEND_MAIL < $ERR_MSG
 	fi
 done
 

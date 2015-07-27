@@ -1,14 +1,14 @@
 #!/bin/sh
+#. $AUTOMIRROR_CONF
 . /var/www/mirrors/automirror/etc/automirror/automirror.conf
 stats=3
-
 while [ "$stats" -ne "0" ]; do
-	/usr/bin/debmirror --allow-dist-rename --getcontents -p -v --nosource -h www.deb-multimedia.org -e rsync --i18n -r :deb -d stable,testing,sid -a i386,amd64 --ignore-release-gpg $WWWDEB_PATH/debian-multimedia/repo/debian
+	$DEBMIRROR --allow-dist-rename --getcontents --nosource -h $MULTIMEDIA_MIRROR -e $MULTIMEDIA_PROTO --i18n -r $MULTIMEDIA_DIR --dist $MULTIMEDIA_DIST -arch $MULTIMEDIA_ARCH --ignore-release-gpg $MULTIMEDIA_WWW
 	stats=$?
 	if [ "$stats" -eq "0" ]; then
-        	/usr/bin/mail -e -s "Mirror debian Multimedia actualizado `date +%m/%d/%y`" $SEND_MAIL < $OK_MSG
+        	/usr/bin/mail -e -s "$MULTIMEDIA_SUBJECT_OK `date +%m/%d/%y`" $SEND_MAIL < $OK_MSG
 	else
-        	/usr/bin/mail -e -s "Mirror debian Multimedia error al actualizar `date +%m/%d/%y`" $SEND_MAIL < $ERR_MSG
+        	/usr/bin/mail -e -s "$MULTIMEDIA_SUBJECT_ER `date +%m/%d/%y`" $SEND_MAIL < $ERR_MSG
 	fi
 done
 
